@@ -12,25 +12,34 @@ public class WilsonTest implements AM {
 
         System.out.println("Received n = " + n);
 
-        boolean result = wilsonTest(n);
+        boolean[] results = new boolean[data.size() - 1];
+
+        System.out.println("Result size is = " + results.length);
+
+        for (int i = 1; i < data.size(); i++) {
+            results[i - 1] = isWilsonPrime(data.get(i));
+        }
 
         System.out.println("Process completed.");
 
-        info.parent.write(result);
+        info.parent.write(results);
     }
 
-    static boolean wilsonTest(int n) {
-        if (n <= 1) return false;
-        if (n == 2) return true;
-
-        BigInteger factorial = BigInteger.ONE;
-        for (int i = 2; i < n; i++) {
-            factorial = factorial.multiply(BigInteger.valueOf(i));
+    static long factorial(int n) {
+        if (n == 0 || n == 1) return 1;
+        long result = 1;
+        for (int i = 2; i <= n; i++) {
+            result *= i;
         }
+        return result;
+    }
 
-        BigInteger leftSide = factorial.add(BigInteger.ONE);
-        BigInteger rightSide = BigInteger.valueOf(n).pow(n - 1);
+    static boolean isWilsonPrime(int p) {
+        if (p <= 1) return false;
+        if (p == 2) return true;
 
-        return leftSide.mod(BigInteger.valueOf(n)).equals(BigInteger.ZERO) && rightSide.mod(BigInteger.valueOf(n)).equals(BigInteger.ZERO);
+        long wilsonCriterion = factorial(p - 1) + 1;
+
+        return wilsonCriterion % p == 0;
     }
 }
