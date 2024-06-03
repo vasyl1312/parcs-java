@@ -7,22 +7,15 @@ public class WilsonTest implements AM {
     public void run(AMInfo info) {
         System.out.println("From worker");
         ArrayList<Integer> data = (ArrayList<Integer>) info.parent.readObject();
+        int rangeStart = data.get(0);
+        int rangeEnd = data.get(1);
 
-        if (data.size() < 3) {
-            System.out.println("Invalid data received");
-            return;
-        }
+        System.out.println("Received range: [" + rangeStart + ", " + rangeEnd + "]");
 
-        int k = data.get(0);
-        int start = data.get(1);
-        int end = data.get(2);
+        boolean[] results = new boolean[rangeEnd - rangeStart + 1];
 
-        System.out.println("Received range: " + start + " to " + end);
-
-        boolean[] results = new boolean[end - start + 1];
-
-        for (int i = start; i <= end; i++) {
-            results[i - start] = wilsonTest(i);
+        for (int i = rangeStart; i <= rangeEnd; i++) {
+            results[i - rangeStart] = wilsonTest(i);
         }
 
         System.out.println("Process completed.");
@@ -32,14 +25,12 @@ public class WilsonTest implements AM {
 
     static boolean wilsonTest(int n) {
         if (n <= 1) return false;
-        return factorial(n - 1) % n == n - 1;
-    }
 
-    static long factorial(int n) {
-        long result = 1;
-        for (int i = 2; i <= n; i++) {
-            result *= i;
+        long factorial = 1;
+        for (int i = 2; i < n; i++) {
+            factorial = (factorial * i) % n;
         }
-        return result;
+
+        return (factorial == n - 1);
     }
 }

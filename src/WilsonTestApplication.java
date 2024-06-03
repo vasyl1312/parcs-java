@@ -19,12 +19,13 @@ public class WilsonTestApplication {
         task.addJarFile("WilsonTest.jar");
 
         String fileName = task.findFile(inputFile);
-        ArrayList<Integer> values = readInputData(fileName);
+        int rangeStart = readRangeStart(fileName);
+        int rangeEnd = readRangeEnd(fileName);
 
-        System.out.println("Values to process: " + values.size());
+        System.out.println("Range: [" + rangeStart + ", " + rangeEnd + "]");
 
         int workersNumber = Integer.parseInt(workersNumberString);
-        int chunkSize = (values.size() + workersNumber - 1) / workersNumber;
+        int chunkSize = (rangeEnd - rangeStart + 1) / workersNumber;
 
         AMInfo amInfo = new AMInfo(task, null);
 
@@ -36,13 +37,12 @@ public class WilsonTestApplication {
             channels[i] = points[i].createChannel();
             points[i].execute("WilsonTest");
 
-            int startIndex = i * chunkSize;
-            int endIndex = Math.min(startIndex + chunkSize, values.size());
+            int startIndex = rangeStart + i * chunkSize;
+            int endIndex = (i == workersNumber - 1) ? rangeEnd : startIndex + chunkSize - 1;
 
             System.out.println("Worker #" + i + ": processing the range [" + startIndex + ", " + endIndex + "].");
 
             ArrayList<Integer> data = new ArrayList<>();
-            data.add(0); // Додано для збереження місця k
             data.add(startIndex);
             data.add(endIndex);
 
@@ -59,7 +59,7 @@ public class WilsonTestApplication {
             boolean[] result = (boolean[]) channels[i].readObject();
             for (int j = 0; j < result.length; j++) {
                 boolean isPrime = result[j];
-                finalResult.append(values.get(i * chunkSize + j));
+                finalResult.append(rangeStart + i * chunkSize + j);
                 finalResult.append(isPrime ? " is prime\n" : " is not prime\n");
             }
         }
@@ -68,7 +68,7 @@ public class WilsonTestApplication {
         System.out.println("Finished.");
 
         long finish = System.currentTimeMillis();
-        System.out.println("Time elapsed: " + (double)(finish - start)/1000 + " seconds.");
+        System.out.println("Time elapsed: " + (double) (finish - start) / 1000 + " seconds.");
 
         task.end();
     }
@@ -82,17 +82,18 @@ public class WilsonTestApplication {
         }
     }
 
-    private static ArrayList<Integer> readInputData(String filename) throws Exception {
+    private static int readRangeStart(String filename) throws Exception {
         Scanner sc = new Scanner(new File(filename));
-        ArrayList<Integer> values = new ArrayList<>();
-        while (sc.hasNextLine()) {
-            String line = sc.nextLine();
-            if (line.isEmpty()) {
-                break;
-            }
-            values.add(Integer.parseInt(line));
-        }
+        int start = Integer.parseInt(sc.nextLine());
         sc.close();
-        return values;
+        return start;
+    }
+
+    private static int readRangeEnd(String filename) throws Exception {
+        Scanner sc = new Scanner(new File(filename));
+        sc.nextLine(); // Skip the first line
+        int end = Integer.parseInt(sc.nextLine());
+        sc.close();
+        return end;
     }
 }
