@@ -1,5 +1,6 @@
 import parcs.*;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class WilsonTest implements AM {
@@ -7,49 +8,29 @@ public class WilsonTest implements AM {
     public void run(AMInfo info) {
         System.out.println("From worker");
         ArrayList<Integer> data = (ArrayList<Integer>) info.parent.readObject();
-        int k = data.get(0);
+        int n = data.get(0);
 
-        System.out.println("Received k = " + k);
+        System.out.println("Received n = " + n);
 
-        boolean[] results = new boolean[data.size() - 1];
-
-        System.out.println("Result size is = " + results.length);
-
-        for (int i = 1; i < data.size(); i++) {
-            results[i - 1] = wilsonTest(data.get(i), k);
-        }
+        boolean result = wilsonTest(n);
 
         System.out.println("Process completed.");
 
-        info.parent.write(results);
+        info.parent.write(result);
     }
 
-    static long power(long x, long y, long p) {
-        long res = 1;
-        x = x % p;
+    static boolean wilsonTest(int n) {
+        if (n <= 1) return false;
+        if (n == 2) return true;
 
-        while (y > 0) {
-            if ((y & 1) == 1) {
-                res = (res * x) % p;
-            }
-
-            y = y >> 1;
-            x = (x * x) % p;
+        BigInteger factorial = BigInteger.ONE;
+        for (int i = 2; i < n; i++) {
+            factorial = factorial.multiply(BigInteger.valueOf(i));
         }
-        return res;
-    }
 
-    static boolean wilsonTest(int n, int k) {
-        if (n <= 1 || n == 4) return false;
-        if (n <= 3) return true;
+        BigInteger leftSide = factorial.add(BigInteger.ONE);
+        BigInteger rightSide = BigInteger.valueOf(n).pow(n - 1);
 
-        for (int i = 0; i < k; i++) {
-            int a = 2 + (int)(Math.random() * (n - 4));
-
-            if (power(a, n - 1, n) != 1) {
-                return false;
-            }
-        }
-        return true;
+        return leftSide.mod(BigInteger.valueOf(n)).equals(BigInteger.ZERO) && rightSide.mod(BigInteger.valueOf(n)).equals(BigInteger.ZERO);
     }
 }
