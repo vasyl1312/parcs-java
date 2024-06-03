@@ -19,14 +19,12 @@ public class WilsonTestApplication {
         task.addJarFile("WilsonTest.jar");
 
         String fileName = task.findFile(inputFile);
-        int rangeStart = readRangeStart(fileName);
-        int rangeEnd = readRangeEnd(fileName);
+        ArrayList<Integer> values = readInputData(fileName);
 
-        System.out.println("Range: " + rangeStart + " to " + rangeEnd);
+        System.out.println("Values to process: " + values.size());
 
         int workersNumber = Integer.parseInt(workersNumberString);
-        int rangeSize = rangeEnd - rangeStart + 1;
-        int chunkSize = rangeSize / workersNumber;
+        int chunkSize = (values.size() + workersNumber - 1) / workersNumber;
 
         AMInfo amInfo = new AMInfo(task, null);
 
@@ -38,8 +36,8 @@ public class WilsonTestApplication {
             channels[i] = points[i].createChannel();
             points[i].execute("WilsonTest");
 
-            int startIndex = rangeStart + i * chunkSize;
-            int endIndex = (i == workersNumber - 1) ? rangeEnd : startIndex + chunkSize - 1;
+            int startIndex = i * chunkSize;
+            int endIndex = Math.min(startIndex + chunkSize, values.size());
 
             System.out.println("Worker #" + i + ": processing the range [" + startIndex + ", " + endIndex + "].");
 
@@ -60,7 +58,7 @@ public class WilsonTestApplication {
             boolean[] result = (boolean[]) channels[i].readObject();
             for (int j = 0; j < result.length; j++) {
                 boolean isPrime = result[j];
-                finalResult.append(rangeStart + i * chunkSize + j);
+                finalResult.append(values.get(i * chunkSize + j));
                 finalResult.append(isPrime ? " is prime\n" : " is not prime\n");
             }
         }
@@ -83,18 +81,17 @@ public class WilsonTestApplication {
         }
     }
 
-    private static int readRangeStart(String filename) throws Exception {
+    private static ArrayList<Integer> readInputData(String filename) throws Exception {
         Scanner sc = new Scanner(new File(filename));
-        int rangeStart = Integer.parseInt(sc.nextLine());
+        ArrayList<Integer> values = new ArrayList<>();
+        while (sc.hasNextLine()) {
+            String line = sc.nextLine();
+            if (line.isEmpty()) {
+                break;
+            }
+            values.add(Integer.parseInt(line));
+        }
         sc.close();
-        return rangeStart;
-    }
-
-    private static int readRangeEnd(String filename) throws Exception {
-        Scanner sc = new Scanner(new File(filename));
-        sc.nextLine(); // Skip the first line
-        int rangeEnd = Integer.parseInt(sc.nextLine());
-        sc.close();
-        return rangeEnd;
+        return values;
     }
 }
