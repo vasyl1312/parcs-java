@@ -7,8 +7,13 @@ public class WilsonTest implements AM {
     public void run(AMInfo info) {
         System.out.println("From worker");
         ArrayList<Integer> data = (ArrayList<Integer>) info.parent.readObject();
-        int k = data.get(0);
 
+        if (data.size() < 3) {
+            System.out.println("Invalid data received");
+            return;
+        }
+
+        int k = data.get(0);
         int start = data.get(1);
         int end = data.get(2);
 

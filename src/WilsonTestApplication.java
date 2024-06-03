@@ -42,6 +42,7 @@ public class WilsonTestApplication {
             System.out.println("Worker #" + i + ": processing the range [" + startIndex + ", " + endIndex + "].");
 
             ArrayList<Integer> data = new ArrayList<>();
+            data.add(0); // Додано для збереження місця k
             data.add(startIndex);
             data.add(endIndex);
 
