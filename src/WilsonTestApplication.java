@@ -25,7 +25,9 @@ public class WilsonTestApplication {
         System.out.println("Range: [" + rangeStart + ", " + rangeEnd + "]");
 
         int workersNumber = Integer.parseInt(workersNumberString);
-        int chunkSize = (rangeEnd - rangeStart + 1) / workersNumber;
+        int totalNumbers = rangeEnd - rangeStart + 1;
+        int chunkSize = totalNumbers / workersNumber;
+        int remainder = totalNumbers % workersNumber;
 
         AMInfo amInfo = new AMInfo(task, null);
 
@@ -37,8 +39,8 @@ public class WilsonTestApplication {
             channels[i] = points[i].createChannel();
             points[i].execute("WilsonTest");
 
-            int startIndex = rangeStart + i * chunkSize;
-            int endIndex = (i == workersNumber - 1) ? rangeEnd : startIndex + chunkSize - 1;
+            int startIndex = rangeStart + i * chunkSize + Math.min(i, remainder);
+            int endIndex = startIndex + chunkSize - 1 + (i < remainder ? 1 : 0);
 
             System.out.println("Worker #" + i + ": processing the range [" + startIndex + ", " + endIndex + "].");
 
@@ -59,7 +61,7 @@ public class WilsonTestApplication {
             boolean[] result = (boolean[]) channels[i].readObject();
             for (int j = 0; j < result.length; j++) {
                 boolean isPrime = result[j];
-                finalResult.append(rangeStart + i * chunkSize + j);
+                finalResult.append(rangeStart + i * chunkSize + j + Math.min(i, remainder));
                 finalResult.append(isPrime ? " is prime\n" : " is not prime\n");
             }
         }
