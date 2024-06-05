@@ -66,6 +66,9 @@ public class WilsonTestApplication {
                 if(isPrime) {
                     finalResult.append(" is prime\n");
                 }
+                else {
+                    finalResult.append(" is not prime\n");
+                }
                 // finalResult.append(isPrime ? " is prime\n" : " is not prime\n");
                 // finalResult.append(isPrime ? " is prime\n" : " is not prime\n");
             }
