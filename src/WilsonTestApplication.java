@@ -76,7 +76,7 @@ public class WilsonTestApplication {
         System.out.println("Finished.");
 
         long finish = System.nanoTime();
-        System.out.println("Time elapsed: " + (double)(finish - start)/1000 + " seconds.");
+        System.out.println("Time elapsed: " + (double)(finish - start)/1000 + "*10^(-9) s.");
 
         task.end();
     }
