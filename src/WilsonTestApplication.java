@@ -55,7 +55,7 @@ public class WilsonTestApplication {
         StringBuilder finalResult = new StringBuilder();
 
         System.out.println("Starting timer...");
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime();
 
         for (int i = 0; i < workersNumber; i++) {
             System.out.println("Running worker #" + i + "...");
@@ -69,15 +69,13 @@ public class WilsonTestApplication {
                 else {
                     finalResult.append(" is not prime\n");
                 }
-                // finalResult.append(isPrime ? " is prime\n" : " is not prime\n");
-                // finalResult.append(isPrime ? " is prime\n" : " is not prime\n");
             }
         }
 
         writeOutputData(outputFile, finalResult.toString());
         System.out.println("Finished.");
 
-        long finish = System.currentTimeMillis();
+        long finish = System.nanoTime();
         System.out.println("Time elapsed: " + (double)(finish - start)/1000 + " seconds.");
 
         task.end();
