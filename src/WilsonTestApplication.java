@@ -63,7 +63,11 @@ public class WilsonTestApplication {
             for (int j = 0; j < result.length; j++) {
                 boolean isPrime = result[j];
                 finalResult.append(values.get(i * chunkSize + j));
-                finalResult.append(isPrime ? " is prime\n" : " is not prime\n");
+                if(isPrime) {
+                    finalResult.append(" is prime\n");
+                }
+                // finalResult.append(isPrime ? " is prime\n" : " is not prime\n");
+                // finalResult.append(isPrime ? " is prime\n" : " is not prime\n");
             }
         }
 
